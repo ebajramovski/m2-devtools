@@ -3,31 +3,16 @@
  * See COPYING.txt for license details.
  */
 
-import { ShimConfig, RequireConfig, PageModule } from '../../types/require';
+import { RequireConfig, PageModule } from '../../types/require';
 import splitter from '../../splitter';
 
 export type RequireModule = {
-    name: string;
+    path: string;
     include: string[];
-    exclude: string[];
-    create: boolean;
 };
 
 type BundleConfig = {
-    optimize: 'none' | 'uglify2';
-    generateSourceMaps: boolean;
-    wrapShim: boolean;
-    modules: RequireModule[];
-    inlineText: boolean;
-    shim: ShimConfig;
-    paths: {
-        [key: string]: string;
-    };
-    map: {
-        '*': {
-            [key: string]: string;
-        };
-    };
+    [key: string]: any;
 };
 
 export default function generate(
@@ -48,47 +33,25 @@ export default function generate(
     const config = cleanShims(cleanURLs(requireConfig));
 
     const sharedModules = {
-        name: 'bundles/shared',
+        path: '*',
         include: commons.filter(m => {
             // `r.js` gets mad if these are included
             // Haven't looked into _why_ quite yet
             // TODO: debug
             return m !== 'mixins' && m !== 'text';
         }),
-        exclude: [],
-        create: true,
     };
 
     const finalModules = Object.entries(finalSplits)
         .filter(([_, modules]) => modules.length)
         .map(([pageConfigType, modules]) => ({
-            name: `bundles/${pageConfigType}`,
-            create: true,
-            include: modules,
-            exclude: ['bundles/shared'],
+            path: `${pageConfigType}`,
+            include: modules
         }))
         .concat([sharedModules])
         .reverse();
 
-    return {
-        optimize: 'uglify2',
-        generateSourceMaps: true,
-        wrapShim: true,
-        inlineText: true,
-        modules: finalModules,
-        shim: {
-            ...config.shim,
-            // Fix for configuration missing in core.
-            // TODO: Update luma (or is it blank?)
-            'magnifier/magnifier': ['jquery'],
-            'fotorama/fotorama': ['jquery'],
-        },
-        paths: {
-            ...config.paths,
-            text: 'requirejs/text',
-        },
-        map: config.map,
-    };
+    return finalModules;
 }
 
 /**

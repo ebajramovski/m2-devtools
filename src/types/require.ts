@@ -10,6 +10,7 @@ export type RequireGlobal = {
                 nameToUrl: (name: string) => string;
                 defined: { [key: string]: any };
                 config: RequireConfig;
+                urlFetched: { [key: string]: any };
             };
         };
     };

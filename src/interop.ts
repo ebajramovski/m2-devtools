@@ -26,6 +26,7 @@ function _getLoadedModulesDetails(): ModuleDescriptor[] {
     const { baseUrl } = require.s.contexts._.config;
 
     return Object.keys(require.s.contexts._.defined).map(identifier => {
+      //  let identifier
         const identParts = identifier.split('!');
         const moduleIdent = identParts[identParts.length - 1];
         const plugins = identParts.slice(0, identParts.length - 1);
@@ -45,7 +46,14 @@ export const getLoadedModulesDetails = () =>
 
 function _getLoadedModules() {
     const require: RequireGlobal = (window as any).require;
-    return Object.keys(require.s.contexts._.defined);
+
+    const result = Object.keys(require.s.contexts._.urlFetched).map(url => {
+        const baseUrl = require.s.contexts._.config.baseUrl;
+
+        return url.replace(baseUrl, '');
+    });
+
+    return result;
 }
 export const getLoadedModules = () =>
     evalInPage<string[]>(_getLoadedModules.toString());

@@ -73,14 +73,11 @@ export default class ConfigGen extends React.PureComponent<Props> {
 }
 
 const transforms = [
-    parenWrap,
-    addConfigReference,
-    sharedBundleComment,
-    uglifyComment,
+    parenWrap
 ];
 
 function parenWrap(code: string) {
-    return `(${code})`;
+    return `${code}`;
 }
 
 function addConfigReference(code: string) {
@@ -90,32 +87,4 @@ function addConfigReference(code: string) {
 // https://github.com/requirejs/r.js/blob/b8a6982/build/example.build.js
 
 ${code}`;
-}
-
-function sharedBundleComment(code: string) {
-    const byLine = code.split('\n');
-    const sharedBundleIndex = byLine.findIndex(c =>
-        c.includes('"name": "bundles/shared",'),
-    );
-    const [whitespace] = byLine[sharedBundleIndex].match(/(\s+)/) || [''];
-    byLine.splice(
-        sharedBundleIndex,
-        0,
-        `${whitespace}// Modules used on > 1 page(s) of the store`,
-    );
-    return byLine.join('\n');
-}
-
-function uglifyComment(code: string) {
-    const byLine = code.split('\n');
-    const uglifyIndex = byLine.findIndex(c =>
-        c.includes('"optimize": "uglify2",'),
-    );
-    const [whitespace] = byLine[uglifyIndex].match(/(\s+)/) || [''];
-    byLine.splice(
-        uglifyIndex,
-        0,
-        `${whitespace}// Set "optimize" to "none" to speed up bundling while debugging`,
-    );
-    return byLine.join('\n');
 }
