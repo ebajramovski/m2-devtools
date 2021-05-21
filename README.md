@@ -2,7 +2,7 @@
 
 Original codebase modified to remove unnecessary configuration and adapt configuration for personal purposes.
 
-Provides data as JSON for a specified page path and the form paths used (without base URL)
+Provides data as JSON for a specified page path and the paths used (without base URL)
 
 The shared bundle definition is defined in the path "*"
 
